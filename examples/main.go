@@ -10,11 +10,11 @@ func main() {
 	rb := bytesf.NewBufferPool(64, 256)
 
 	// Allocate buffer
-	b := rb.GetBuffer()
+	b := rb.Allocate()
 
 	b.WriteString("Hello World!")
 	fmt.Printf("% x", b.Bytes())
 
 	// Release ownership of buffer
-	rb.PutBuffer(b)
+	rb.Release(b)
 }

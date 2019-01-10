@@ -15,6 +15,7 @@ var testTexts = []string{
 	"Damit das Projekt gleich starten kann benutze einfach etwas Lorem ipsum - Blind-, Füll-, Dummy-, Nachahmungs-, Platzhaltertext.",
 	"Generiere einfach soviel Lorem Ipsum Text wie du brauchst, kopiere und füge ihn in dein Layout als vorübergehenden Platzhalter ein. Somit sieht das Projekt ein Stückchen vollständiger aus als zuvor. Viel Spaß dabei.",
 	"PC - per Klick auf die rechte Maustaste und dann speichern.",
+	"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
 }
 
 func TestBufferPool(t *testing.T) {
@@ -27,13 +28,13 @@ func TestBufferPool(t *testing.T) {
 			t.Parallel()
 
 			for n := 0; n <= 1000; n++ {
-				buf := b.GetBuffer()
+				buf := b.Allocate()
 
 				fmt.Fprint(buf, text)
 
 				assert.Equal(t, text, buf.String())
 
-				b.PutBuffer(buf)
+				b.Release(buf)
 			}
 
 		})
@@ -57,9 +58,9 @@ func Benchmark_Pooled(b *testing.B) {
 
 		b.Run(fmt.Sprintf("Text %d (%d bytes)", i, len(text)), func(b *testing.B) {
 			for n := 0; n < b.N; n++ {
-				buf := bf.GetBuffer()
+				buf := bf.Allocate()
 				buf.WriteString(text)
-				bf.PutBuffer(buf)
+				bf.Release(buf)
 			}
 		})
 	}
